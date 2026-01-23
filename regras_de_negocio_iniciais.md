@@ -22,7 +22,7 @@ Interpretar corretamente as operações
 
 
 
-Filtrar clientes elegíveis ao GV8
+Filtrar clientes elegíveis ao GV8 (regra crítica)
 
 
 
@@ -38,7 +38,7 @@ Permitir evolução para novos sistemas, bancos e contratos
 
 
 
-2\. Decisões Técnicas (Sprint 0A)
+2\. Decisões Técnicas (Sprint 0)
 
 
 
@@ -124,7 +124,7 @@ Movimentações financeiras, transações operacionais ou ajustes sistêmicos n�
 
 
 
-4.2 Elegibilidade de Clientes (Regra Crítica)
+4.2 Elegibilidade de Clientes (Regra Crítica – GV8)
 
 
 
@@ -160,11 +160,11 @@ participar de rateio
 
 
 
-O fato de o cliente constar na mesma base ou planilha não o torna elegível
+O fato de o cliente constar na mesma base ou planilha não o torna elegível.
 
 
 
-Essa regra se sobrepõe a qualquer outra.
+👉 Essa regra se sobrepõe a qualquer outra regra do sistema.
 
 
 
@@ -182,7 +182,7 @@ valor               → valor financeiro da linha
 
 descricao\_operacao  → descrição original da coluna "Operação"
 
-categoria\_operacao  → classificação configurável (tarifa, transacao, estorno, desconhecida)
+categoria\_operacao  → tarifa | transacao | estorno | desconhecida
 
 impacto\_lucro       → receita | custo | reversao | neutro
 
@@ -190,13 +190,13 @@ sistema\_origem      → sistema que gerou o relatório
 
 banco\_liquidante    → banco responsável pela liquidação
 
-cliente\_elegivel    → booleano (True/False)
+cliente\_elegivel    → booleano (True / False)
 
 
 
 
 
-Somente registros com cliente\_elegivel = True podem seguir para cálculo.
+👉 Somente registros com cliente\_elegivel = True podem seguir para cálculo financeiro.
 
 
 
@@ -232,12 +232,6 @@ deve ter impacto neutro.
 
 6.2 Operações classificadas como TARIFA
 
-
-
-As descrições abaixo representam tarifas cobradas do cliente:
-
-
-
 Descrição da Operação	Descrição Funcional
 
 CUSTO REGISTRO BOLETO ONLINE	Tarifa de emissão/registro de boletos
@@ -256,63 +250,7 @@ MANUTENÇÃO DE CONTA	Tarifa mensal
 
 
 
-O rateio da receita proveniente de tarifas não é fixo e depende do contrato vigente do cliente.
-
-
-
-Exemplos:
-
-
-
-Cliente X
-
-
-
-GV8: 30%
-
-
-
-Privilege IP: 30%
-
-
-
-Representante Comercial GV8: 40%
-
-
-
-Cliente Y
-
-
-
-GV8: 45%
-
-
-
-Privilege IP: 45%
-
-
-
-Representante Comercial GV8: 10%
-
-
-
-Princípios:
-
-
-
-A soma dos percentuais deve ser 100%
-
-
-
-O contrato é definido por regra externa
-
-
-
-O representante comercial não vem da planilha
-
-
-
-Clientes não elegíveis não entram no rateio
+(inalterado – permanece como regra futura)
 
 
 
@@ -320,23 +258,7 @@ Clientes não elegíveis não entram no rateio
 
 
 
-Os custos operacionais:
-
-
-
-não constam na planilha
-
-
-
-são definidos por contrato
-
-
-
-variam conforme banco liquidante e sistema
-
-
-
-Custos são considerados fixos por operação dentro do contrato vigente, podendo ser alterados futuramente.
+(inalterado – permanece como regra futura)
 
 
 
@@ -344,33 +266,7 @@ Custos são considerados fixos por operação dentro do contrato vigente, podend
 
 
 
-O banco liquidante BMP aplica custos operacionais fixos por tarifa.
-
-
-
-9.1 Custos aplicáveis
-
-Tipo de Tarifa	Custo Unitário
-
-REGISTRO BOLETO	R$ 1,50
-
-TED	R$ 1,50
-
-RECEBIMENTO PIX	R$ 0,30
-
-PIX RECEBIMENTO VIA BOLETO	R$ 0,50
-
-ENVIO PIX	R$ 0,50
-
-9.2 Tarifas sem custo BMP
-
-
-
-MANUTENÇÃO DE CONTA
-
-
-
-SPLIT PERCENTUAL
+(inalterado – permanece como regra futura)
 
 
 
@@ -378,15 +274,7 @@ SPLIT PERCENTUAL
 
 
 
-Estornos de tarifas → reversão
-
-
-
-Estornos de transações → impacto neutro
-
-
-
-Operações sem regra → impacto neutro por padrão
+(inalterado)
 
 
 
@@ -450,13 +338,57 @@ evolução sem refatoração estrutural
 
 
 
-13\. Status do Projeto
+13\. Status do Projeto (Atualizado)
 
 
 
-Sprint 0: Concluído (escopo e regras fechados)
+Sprint 0: Concluído
 
 
 
-Sprint 1: Implementação do primeiro cálculo funcional
+Escopo definido
+
+
+
+Regras de negócio documentadas
+
+
+
+Sprint 1: Concluída
+
+
+
+Leitura da planilha Privilege
+
+
+
+Modelo interno inicial de registros
+
+
+
+Classificação de operações via whitelist
+
+
+
+Soma de tarifas
+
+
+
+Código revisado e versionado
+
+
+
+Sprint 2: Em andamento
+
+
+
+Implementação da regra crítica de elegibilidade de clientes (GV8)
+
+
+
+Garantia de que somente clientes elegíveis participem do cálculo
+
+
+
+Preparação da base para custos, lucro e rateio futuros
 
