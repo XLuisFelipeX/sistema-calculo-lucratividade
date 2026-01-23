@@ -127,6 +127,8 @@ def main():
 
     # print(f"Total de registros lidos: {len(registros)}")
     # print(f"Total de tarifas válidas: {len(tarifas)}")
+    # OBS: 'tarifas' era usado antes da classificação.
+    # Hoje a fonte de verdade é 'categoria_operacao'.
 
     # ==================================================
     # FIM DO TESTE DE VOLUME
