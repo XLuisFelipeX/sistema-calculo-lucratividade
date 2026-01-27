@@ -38,7 +38,7 @@ def ler_planilha_privilege(caminho_arquivo, sistema_origem):
             "valor": linha[8],       # Coluna I - Valor
             "sistema_origem": sistema_origem,
             "cliente": "EMPRESA XYZ LTDA",
-            "cliente_elegivel": False
+            "cliente_elegivel": True
         }
         registros.append(registro)
 
@@ -85,6 +85,19 @@ def classificar_operacoes(registros):
 
     return registros
 
+def filtrar_registros_elegiveis(registros):
+    """
+    Retorna apenas registros com cliente_elegivel = True.
+    Não altera os registros originais.
+    """
+    registros_elegiveis = []
+
+    for registro in registros:
+        if registro.get("cliente_elegivel") is True:
+            registros_elegiveis.append(registro)
+
+    return registros_elegiveis
+
 def somar_valor_tarifas(registros):
     """
     Soma o valor de todos os registros classificados como tarifa.
@@ -107,6 +120,12 @@ def main():
         aplicar_elegibilidade_por_sistema(registro)
 
     registros_classificados = classificar_operacoes(registros)
+
+    registros_elegiveis = filtrar_registros_elegiveis(registros_classificados)
+
+    total_tarifas = somar_valor_tarifas(registros_elegiveis)
+    print(f"Total de tarifas elegíveis: R$ {total_tarifas:.2f}")
+
 
     print(registros[0])
 
