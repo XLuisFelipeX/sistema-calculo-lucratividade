@@ -1,10 +1,8 @@
 from openpyxl import load_workbook
 
-# Sprint 1 – ENCERRADA
-# Funcionalidades:
-# - Leitura da planilha Privilege
-# - Classificação de operações
-# - Soma de tarifas
+CLIENTES_ELEGIVEIS_GV8 = {
+    "EMPRESA XYZ LTDA",
+}
 
 TARIFAS_VALIDAS = [
     "CUSTO REGISTRO BOLETO ONLINE",
@@ -22,8 +20,7 @@ def eh_tarifa_valida(descricao):
     """
     return descricao in TARIFAS_VALIDAS
 
-
-def ler_planilha_privilege(caminho_arquivo):
+def ler_planilha_privilege(caminho_arquivo, sistema_origem):
     workbook = load_workbook(caminho_arquivo)
     sheet = workbook.active
 
@@ -39,10 +36,24 @@ def ler_planilha_privilege(caminho_arquivo):
             "data": linha[6],        # Coluna G - DataMovto
             "descricao": linha[7],   # Coluna H - Operação
             "valor": linha[8],       # Coluna I - Valor
+            "sistema_origem": sistema_origem,
+            "cliente": "EMPRESA XYZ LTDA",
+            "cliente_elegivel": False
         }
         registros.append(registro)
 
     return registros
+
+def aplicar_elegibilidade_por_sistema(registro):
+    sistema = registro["sistema_origem"]
+
+    if sistema in ["FOURBANK", "AARIN"]:
+        registro["cliente_elegivel"] = True
+    elif sistema == "PRIVILEGE":
+        cliente = registro["cliente"]
+        registro["cliente_elegivel"] = cliente in CLIENTES_ELEGIVEIS_GV8
+    else:
+        registro["cliente_elegivel"] = False
 
 def filtrar_tarifas(registros):
     """
@@ -74,7 +85,6 @@ def classificar_operacoes(registros):
 
     return registros
 
-
 def somar_valor_tarifas(registros):
     """
     Soma o valor de todos os registros classificados como tarifa.
@@ -91,9 +101,17 @@ def somar_valor_tarifas(registros):
 def main():
     caminho_arquivo = r"C:\Users\Luis.Nunes\Desktop\Projeto Sistema de Cálculo de Lucratividade\Relatório Privilege - 01.12-31.12\Relatório Movimentos - 01.12-31.12.xlsx"
 
-    registros = ler_planilha_privilege(caminho_arquivo)
+    registros = ler_planilha_privilege(caminho_arquivo, sistema_origem="PRIVILEGE")
+
+    for registro in registros:
+        aplicar_elegibilidade_por_sistema(registro)
 
     registros_classificados = classificar_operacoes(registros)
+
+    print(registros[0])
+
+    for r in registros[:5]:
+        print(r["cliente"], r["sistema_origem"], r["cliente_elegivel"])
 
     # ==================================================
     # TESTE MANUAL – VALIDAÇÃO DA CLASSIFICAÇÃO

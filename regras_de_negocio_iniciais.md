@@ -64,6 +64,12 @@ Fonte de dados: Planilhas (Excel) extraídas de sistemas financeiros
 
 3\. Sistemas de Origem
 
+
+
+O sistema trabalha com múltiplos sistemas de origem, que podem possuir características distintas quanto à elegibilidade dos clientes.
+
+
+
 3.1 Sistema Privilege
 
 
@@ -76,13 +82,43 @@ Formato de planilha: específico do sistema Privilege
 
 
 
-Observação:
+Observação importante:
 
-A planilha contém movimentações financeiras e tarifas de clientes do GV8 e de terceiros.
+A planilha do sistema Privilege contém movimentações financeiras e tarifas de:
 
 
 
-3.2 Sistema Aarin (futuro)
+clientes indicados pelo GV8
+
+
+
+clientes que não pertencem à carteira do GV8
+
+
+
+O sistema Privilege não distingue explicitamente, em seu relatório, quais clientes são do GV8.
+
+Por esse motivo, a elegibilidade de clientes deve ser verificada por regra externa.
+
+
+
+3.2 Sistema Fourbank
+
+
+
+Sistema contratado exclusivamente pelo GV8
+
+
+
+Todos os clientes presentes no relatório pertencem ao GV8
+
+
+
+👉 Para o sistema Fourbank, a elegibilidade de clientes é implícita.
+
+
+
+3.3 Sistema Aarin (futuro)
 
 
 
@@ -94,7 +130,19 @@ Formato de planilha: diferente do sistema Privilege
 
 
 
-O sistema deve estar preparado para novos sistemas no futuro, cada um com:
+Sistema contratado exclusivamente pelo GV8
+
+
+
+👉 Para o sistema Aarin, a elegibilidade de clientes também é implícita.
+
+
+
+Consideração Geral sobre Sistemas de Origem
+
+
+
+Cada sistema pode possuir:
 
 
 
@@ -107,6 +155,14 @@ banco liquidante próprio
 
 
 regras contratuais específicas
+
+
+
+regras distintas de elegibilidade
+
+
+
+O sistema deve estar preparado para lidar com essas diferenças de forma explícita e extensível.
 
 
 
@@ -132,7 +188,19 @@ Somente clientes indicados/comercializados pelo GV8 devem ser considerados no c�
 
 
 
-Embora a planilha do sistema Privilege contenha uma base mais ampla de clientes, nem todos pertencem à carteira do GV8.
+A aplicação da regra de elegibilidade depende do sistema de origem:
+
+
+
+Sistemas exclusivos do GV8 (Fourbank, Aarin):
+
+Todos os clientes são considerados elegíveis.
+
+
+
+Sistema compartilhado (Privilege):
+
+A elegibilidade do cliente deve ser verificada por meio de uma base externa de referência, mantida pelo GV8.
 
 
 
@@ -160,11 +228,11 @@ participar de rateio
 
 
 
-O fato de o cliente constar na mesma base ou planilha não o torna elegível.
+O fato de o cliente constar na mesma planilha não o torna elegível.
 
 
 
-👉 Essa regra se sobrepõe a qualquer outra regra do sistema.
+👉 Esta regra se sobrepõe a qualquer outra regra do sistema.
 
 
 
@@ -176,23 +244,35 @@ Após a leitura de qualquer planilha, cada linha será convertida para o seguint
 
 
 
-data                → data/hora da movimentação
-
-valor               → valor financeiro da linha
-
-descricao\_operacao  → descrição original da coluna "Operação"
-
-categoria\_operacao  → tarifa | transacao | estorno | desconhecida
-
-impacto\_lucro       → receita | custo | reversao | neutro
-
-sistema\_origem      → sistema que gerou o relatório
-
-banco\_liquidante    → banco responsável pela liquidação
-
-cliente\_elegivel    → booleano (True / False)
+data → data/hora da movimentação
 
 
+
+valor → valor financeiro da linha
+
+
+
+descricao\_operacao → descrição original da coluna "Operação"
+
+
+
+categoria\_operacao → tarifa | transacao | estorno | desconhecida
+
+
+
+impacto\_lucro → receita | custo | reversao | neutro
+
+
+
+sistema\_origem → sistema que gerou o relatório
+
+
+
+banco\_liquidante → banco responsável pela liquidação
+
+
+
+cliente\_elegivel → booleano (True / False), derivado por regra de negócio
 
 
 
@@ -340,9 +420,7 @@ evolução sem refatoração estrutural
 
 13\. Status do Projeto (Atualizado)
 
-
-
-Sprint 0: Concluído
+Sprint 0 — Concluído
 
 
 
@@ -354,7 +432,7 @@ Regras de negócio documentadas
 
 
 
-Sprint 1: Concluída
+Sprint 1 — Concluída
 
 
 
@@ -378,11 +456,15 @@ Código revisado e versionado
 
 
 
-Sprint 2: Em andamento
+Sprint 2 — Em andamento
 
 
 
 Implementação da regra crítica de elegibilidade de clientes (GV8)
+
+
+
+Diferenciação entre sistemas exclusivos e compartilhados
 
 
 
