@@ -1,277 +1,293 @@
-# Regras de Negócio Iniciais
+Regras de Negócio Iniciais
+Sistema de Cálculo de Lucratividade
+1. Objetivo do Projeto
 
-## Sistema de Cálculo de Lucratividade
-
----
-
-## 1. Objetivo do Projeto
-
-Este projeto tem como objetivo construir um **Sistema de Cálculo de Lucratividade**, baseado na leitura de planilhas financeiras extraídas de sistemas distintos, considerando regras de negócio específicas, com foco exclusivo em **tarifas cobradas aos clientes elegíveis do GV8**.
+Este projeto tem como objetivo construir um Sistema de Cálculo de Lucratividade, baseado na leitura de planilhas financeiras extraídas de sistemas distintos, considerando regras de negócio específicas, com foco exclusivo em tarifas cobradas aos clientes elegíveis do GV8.
 
 O sistema deverá:
 
-* Ler planilhas de diferentes sistemas de origem
-* Interpretar corretamente as operações
-* Identificar e marcar clientes elegíveis ao GV8 (regra crítica)
-* **Aplicar explicitamente a elegibilidade no cálculo financeiro**
-* Aplicar custos operacionais externos à planilha (futuro)
-* Calcular a lucratividade semanal
-* Permitir evolução para novos sistemas, bancos e contratos
+Ler planilhas de diferentes sistemas de origem
 
----
+Interpretar corretamente as operações
 
-## 2. Decisões Técnicas (Sprint 0)
+Identificar e marcar clientes elegíveis ao GV8 (regra crítica)
 
-* Linguagem: Python
-* Tipo de aplicação: Console
-* Nível: Iniciante
-* Abordagem: Desenvolvimento incremental por sprints
-* Fonte de dados: Planilhas (Excel) extraídas de sistemas financeiros
+Aplicar explicitamente a elegibilidade no cálculo financeiro
 
----
+Aplicar custos operacionais externos à planilha
 
-## 3. Sistemas de Origem
+Calcular a lucratividade em etapas controladas
+
+Permitir evolução para novos sistemas, bancos e contratos
+
+2. Decisões Técnicas (Sprint 0)
+
+Linguagem: Python
+
+Tipo de aplicação: Console
+
+Nível: Iniciante
+
+Abordagem: Desenvolvimento incremental por sprints
+
+Fonte de dados: Planilhas (Excel) extraídas de sistemas financeiros
+
+3. Sistemas de Origem
 
 O sistema trabalha com múltiplos sistemas de origem, que podem possuir características distintas quanto à elegibilidade dos clientes.
 
-### 3.1 Sistema Privilege
+3.1 Sistema Privilege
 
-* Banco liquidante: BMP
-* Formato de planilha: específico do sistema Privilege
+Banco liquidante: BMP
 
-**Observação importante:**
+Formato de planilha: específico do sistema Privilege
+
+Observação importante:
 A planilha do sistema Privilege contém movimentações financeiras e tarifas de:
 
-* clientes indicados pelo GV8
-* clientes que não pertencem à carteira do GV8
+clientes indicados pelo GV8
 
-O sistema Privilege **não distingue explicitamente**, em seu relatório, quais clientes são do GV8.
-Por esse motivo, a elegibilidade de clientes deve ser verificada por **regra externa**.
+clientes que não pertencem à carteira do GV8
 
----
+O sistema Privilege não distingue explicitamente quais clientes pertencem ao GV8.
+A elegibilidade deve ser determinada por regra externa.
 
-### 3.2 Sistema Fourbank
+3.2 Sistema Fourbank
 
-* Sistema contratado exclusivamente pelo GV8
-* Todos os clientes presentes no relatório pertencem ao GV8
+Sistema contratado exclusivamente pelo GV8
 
-👉 Para o sistema Fourbank, a elegibilidade de clientes é **implícita**.
+👉 Para o sistema Fourbank, a elegibilidade dos clientes é implícita.
 
----
+3.3 Sistema Aarin (futuro)
 
-### 3.3 Sistema Aarin (futuro)
+Banco liquidante: Bradesco
 
-* Banco liquidante: Bradesco
-* Formato de planilha: diferente do sistema Privilege
-* Sistema contratado exclusivamente pelo GV8
+Sistema contratado exclusivamente pelo GV8
 
-👉 Para o sistema Aarin, a elegibilidade de clientes também é **implícita**.
+👉 Para o sistema Aarin, a elegibilidade dos clientes também é implícita.
 
----
-
-### Consideração Geral sobre Sistemas de Origem
+Consideração Geral sobre Sistemas de Origem
 
 Cada sistema pode possuir:
 
-* planilha própria
-* banco liquidante próprio
-* regras contratuais específicas
-* regras distintas de elegibilidade
+planilha própria
 
-O sistema deve estar preparado para lidar com essas diferenças de forma **explícita, rastreável e extensível**.
+banco liquidante próprio
 
----
+regras contratuais específicas
 
-## 4. Princípios Fundamentais de Cálculo
+regras distintas de elegibilidade
 
-### 4.1 Base de Cálculo
+O sistema deve tratar essas diferenças de forma explícita, rastreável e extensível.
 
-A lucratividade é calculada **exclusivamente com base em TARIFAS**.
+4. Princípios Fundamentais de Cálculo
+4.1 Base de Cálculo
 
-Movimentações financeiras, transações operacionais ou ajustes sistêmicos **não representam receita nem custo** para fins de lucratividade do GV8.
+A lucratividade é calculada exclusivamente com base em TARIFAS.
 
----
+Movimentações financeiras, transações operacionais ou ajustes sistêmicos não representam receita nem custo para fins de lucratividade do GV8.
 
-### 4.2 Elegibilidade de Clientes (Regra Crítica – GV8)
+4.2 Elegibilidade de Clientes (Regra Crítica – GV8)
 
-Somente clientes **indicados/comercializados pelo GV8** devem ser considerados no cálculo de lucratividade.
+Somente clientes indicados/comercializados pelo GV8 podem participar de qualquer cálculo financeiro.
 
 A aplicação da regra de elegibilidade depende do sistema de origem:
 
-* **Sistemas exclusivos do GV8 (Fourbank, Aarin):**
-  Todos os clientes são considerados elegíveis.
+Sistemas exclusivos do GV8 (Fourbank, Aarin)
+Todos os clientes são elegíveis.
 
-* **Sistema compartilhado (Privilege):**
-  A elegibilidade do cliente deve ser verificada por meio de uma base externa de referência, mantida pelo GV8.
+Sistema compartilhado (Privilege)
+A elegibilidade é verificada por base externa mantida pelo GV8.
 
-Portanto:
+Regras absolutas:
 
-* Clientes não indicados pelo GV8 devem ser **totalmente ignorados**
-* Nenhuma tarifa desses clientes deve:
+Clientes não elegíveis devem ser totalmente ignorados
 
-  * gerar receita
-  * gerar custo
-  * participar de rateio
+Nenhuma tarifa desses clientes pode:
 
-O fato de o cliente constar na mesma planilha **não o torna elegível**.
+gerar receita
 
-👉 Esta regra **se sobrepõe a qualquer outra regra do sistema**.
+gerar custo
 
----
+participar de rateio
 
-## 5. Modelo Padrão Interno (Contrato de Dados)
+👉 Esta regra se sobrepõe a qualquer outra regra do sistema.
 
-Após a leitura de qualquer planilha, cada linha será convertida para o seguinte modelo interno:
+5. Modelo Padrão Interno (Contrato de Dados)
 
-* `data` → data/hora da movimentação
-* `valor` → valor financeiro da linha
-* `descricao_operacao` → descrição original da coluna "Operação"
-* `categoria_operacao` → tarifa | transacao | estorno | desconhecida
-* `impacto_lucro` → receita | custo | reversao | neutro
-* `sistema_origem` → sistema que gerou o relatório
-* `banco_liquidante` → banco responsável pela liquidação
-* `cliente` → identificador do cliente
-* `cliente_elegivel` → booleano (True / False), derivado por regra de negócio
+Após a leitura de qualquer planilha, cada linha deve ser convertida para o seguinte modelo interno:
 
-👉 **Somente registros com `cliente_elegivel = True` podem seguir para qualquer cálculo financeiro.**
+data → data/hora da movimentação
 
----
+valor → valor financeiro da linha
 
-## 6. Classificação das Operações – Sistema Privilege / BMP
+descricao_operacao → descrição original da operação
 
-### 6.1 Princípio de Classificação (Whitelist)
+categoria_operacao → tarifa | transacao | estorno | desconhecida
 
-Somente operações explicitamente classificadas como **TARIFA** entram no cálculo de lucratividade.
+impacto_lucro → receita | neutro
 
-Qualquer operação que:
+sistema_origem → sistema que gerou o relatório
 
-* não seja tarifa
-* não possua regra explícita
-* seja desconhecida
+banco_liquidante → banco responsável pela liquidação
 
-Deve ter impacto **neutro**.
+cliente → identificador do cliente
 
----
+cliente_elegivel → booleano (True / False)
 
-### 6.2 Operações classificadas como TARIFA
+👉 Somente registros com cliente_elegivel = True podem seguir para qualquer cálculo financeiro.
 
-| Descrição da Operação        | Descrição Funcional                   |
-| ---------------------------- | ------------------------------------- |
-| CUSTO REGISTRO BOLETO ONLINE | Tarifa de emissão/registro de boletos |
-| CUSTO ENVIO TED              | Tarifa de envio TED                   |
-| CUSTO ENVIO PIX              | Tarifa de envio Pix                   |
-| CUSTO RECEBIMENTO PIX        | Tarifa de recebimento Pix             |
-| SPLIT PERCENTUAL             | Tarifa de recebimento (Cash In)       |
-| MANUTENÇÃO DE CONTA          | Tarifa mensal                         |
+6. Classificação das Operações – Sistema Privilege / BMP
+6.1 Princípio de Classificação (Whitelist)
 
----
+Somente operações explicitamente classificadas como TARIFA participam do cálculo de lucratividade.
 
-## 7. Aplicação da Elegibilidade no Cálculo (Sprint 3)
+Qualquer operação não classificada deve ter impacto neutro.
 
-A partir da Sprint 3, a elegibilidade deixa de ser apenas **informativa** e passa a ser **operacional**.
+6.2 Operações classificadas como TARIFA
+Descrição da Operação	Descrição Funcional
+CUSTO REGISTRO BOLETO ONLINE	Tarifa de emissão/registro de boletos
+CUSTO ENVIO TED	Tarifa de envio TED
+CUSTO ENVIO PIX	Tarifa de envio Pix
+CUSTO RECEBIMENTO PIX	Tarifa de recebimento Pix
+SPLIT PERCENTUAL	Tarifa de recebimento (Cash In)
+MANUTENÇÃO DE CONTA	Tarifa mensal
+7. Aplicação da Elegibilidade no Cálculo (Sprint 3)
 
-Regras:
+A partir da Sprint 3:
 
-* Registros não elegíveis **não participam do cálculo**, mesmo que:
+A elegibilidade deixa de ser informativa e passa a ser operacional
 
-  * sejam tarifas válidas
-  * estejam corretamente classificados
+Registros não elegíveis:
 
-* O sistema deve manter **separação explícita** entre:
+não geram receita
 
-  * registros lidos
-  * registros classificados
-  * registros elegíveis
-  * registros efetivamente utilizados no cálculo
+não geram custo
 
-* A filtragem por `cliente_elegivel` ocorre **antes de qualquer soma ou apuração financeira**.
+não participam de nenhum cálculo
 
----
+A filtragem por cliente_elegivel ocorre antes de qualquer apuração financeira.
 
-## 8. Ordem de Aplicação das Regras Financeiras
+8. Ordem de Aplicação das Regras Financeiras
 
-A ordem correta é:
+A ordem correta e imutável é:
 
-1. Filtragem de clientes elegíveis (GV8)
-2. Identificação da tarifa
-3. Apuração da receita bruta
-4. Aplicação dos custos operacionais
-5. Cálculo do lucro líquido
-6. Rateio conforme contrato
+Filtragem de clientes elegíveis
 
----
+Identificação de tarifas
 
-## 9. Rateio de Lucratividade por Cliente / Contrato
+Apuração da receita bruta
 
-*(inalterado – permanece como regra futura)*
+Aplicação de custos operacionais
 
----
+Cálculo do lucro líquido
 
-## 10. Custos Operacionais (Externos à Planilha)
+Rateio conforme contrato
 
-*(inalterado – permanece como regra futura)*
+9. Custos Operacionais (Conceito Geral)
 
----
+Custos operacionais:
 
-## 11. Custos Operacionais – Banco Liquidante BMP
+Não vêm da planilha de origem
 
-*(inalterado – permanece como regra futura)*
+São definidos externamente
 
----
+Devem ser:
 
-## 12. Estornos e Operações Desconhecidas
+explícitos
 
-*(inalterado)*
+rastreáveis
 
----
+aplicados apenas sobre registros elegíveis
 
-## 13. Extensibilidade do Sistema
+Nenhum custo pode ser aplicado implicitamente.
+
+10. Custos Operacionais – Banco Liquidante BMP
+
+(mantido como regra futura, a ser detalhada em sprint específica)
+
+11. Estornos e Operações Desconhecidas
+
+Estornos e operações desconhecidas possuem impacto neutro
+
+Não geram receita nem custo
+
+Servem apenas para rastreabilidade histórica
+
+12. Extensibilidade do Sistema
 
 O sistema deve permitir:
 
-* inclusão de novos sistemas
-* inclusão de novos bancos
-* inclusão/exclusão de clientes elegíveis
-* alteração de custos e contratos
-* evolução sem refatoração estrutural
+inclusão de novos sistemas
 
----
+inclusão de novos bancos
 
-## 14. Status do Projeto (Atualizado)
+inclusão/exclusão de clientes elegíveis
 
-### Sprint 0 — Concluída
+inclusão de novos tipos de custo
 
-* Escopo definido
-* Regras de negócio documentadas
+evolução sem refatoração estrutural
 
-### Sprint 1 — Concluída
+13. Status do Projeto
+Sprint 0 — Concluída
 
-* Leitura da planilha Privilege
-* Modelo interno inicial de registros
-* Classificação de operações via whitelist
-* Soma de tarifas
-* Código revisado e versionado
+Escopo definido
 
-### Sprint 2 — Concluída
+Regras de negócio documentadas
 
-* Introdução de `sistema_origem`
-* Introdução de `cliente`
-* Introdução de `cliente_elegivel`
-* Diferenciação entre sistemas exclusivos e compartilhados
-* Elegibilidade explícita, rastreável e extensível
+Sprint 1 — Concluída
 
-### Sprint 3 — Concluída
+Leitura da planilha Privilege
 
-* Aplicação prática da elegibilidade no cálculo
-* Filtragem explícita de registros elegíveis
-* Garantia de que registros não elegíveis não geram receita nem custo
-* Separação clara entre registros lidos, classificados e utilizados no cálculo
+Modelo interno inicial
 
----
+Classificação via whitelist
 
-### Sprint 4 — Planejada
+Soma de tarifas
 
-* Introdução do conceito de impacto financeiro (receita, custo, neutro)
-* Preparação da base para cálculo de lucro líquido
-* Implementação inicial de custos operacionais
-* Nenhuma alteração nas regras de elegibilidade ou classificação
+Código versionado
+
+Sprint 2 — Concluída
+
+Introdução de sistema_origem
+
+Introdução de cliente
+
+Introdução de cliente_elegivel
+
+Elegibilidade explícita e rastreável
+
+Sprint 3 — Concluída
+
+Elegibilidade aplicada ao cálculo
+
+Filtragem explícita de registros elegíveis
+
+Separação clara entre leitura, classificação e cálculo
+
+Sprint 4 — Concluída
+
+Introdução do campo impacto_lucro
+
+Classificação explícita do impacto financeiro
+
+Preservação integral das regras anteriores
+
+Base preparada para custos e lucro líquido
+
+Sprint 5 — Em andamento
+
+Introdução de custos operacionais explícitos
+
+Aplicação controlada e rastreável de custos
+
+Nenhum cálculo de lucro líquido
+
+Nenhum rateio
+
+Nenhuma refatoração de código existente
+
+14. Observação Final
+
+Cada sprint consolida uma camada lógica isolada.
+Nenhuma sprint futura pode alterar o comportamento validado das anteriores.
