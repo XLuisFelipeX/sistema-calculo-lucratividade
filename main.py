@@ -85,6 +85,16 @@ def classificar_operacoes(registros):
 
     return registros
 
+def classificar_impacto_lucro(registro):
+    """
+    Atribui o impacto financeiro do registro.
+    Não altera elegibilidade, categoria ou valor.
+    """
+    if registro.get("categoria_operacao") != "tarifa":
+        registro["impacto_lucro"] = "neutro"
+    else:
+        registro["impacto_lucro"] = "receita"
+
 def filtrar_registros_elegiveis(registros):
     """
     Retorna apenas registros com cliente_elegivel = True.
@@ -121,16 +131,44 @@ def main():
 
     registros_classificados = classificar_operacoes(registros)
 
+    for registro in registros_classificados:
+        classificar_impacto_lucro(registro)
+
+    # ==================================================
+    # TESTE MANUAL – SPRINT 4.3
+    # Validação do impacto financeiro por registro
+    # ==================================================
+
+    # for r in registros_classificados[:5]:
+    #     print(
+    #         r["descricao"],
+    #         r["categoria_operacao"],
+    #         r["impacto_lucro"],
+    #         r["cliente_elegivel"]
+    #     )
+
+    # ==================================================
+    # FIM DO TESTE MANUAL – SPRINT 4.3
+    # ==================================================
+
     registros_elegiveis = filtrar_registros_elegiveis(registros_classificados)
 
     total_tarifas = somar_valor_tarifas(registros_elegiveis)
     print(f"Total de tarifas elegíveis: R$ {total_tarifas:.2f}")
 
+    # ==================================================
+    # TESTES MANUAIS HISTÓRICOS (SPRINTS ANTERIORES)
+    # Mantidos apenas para consulta
+    # ==================================================
 
-    print(registros[0])
+    # print(registros[0])
 
-    for r in registros[:5]:
-        print(r["cliente"], r["sistema_origem"], r["cliente_elegivel"])
+    # for r in registros[:5]:
+    #     print(r["cliente"], r["sistema_origem"], r["cliente_elegivel"])
+
+    # ==================================================
+    # FIM DOS TESTES MANUAIS HISTÓRICOS
+    # ==================================================
 
     # ==================================================
     # TESTE MANUAL – VALIDAÇÃO DA CLASSIFICAÇÃO
