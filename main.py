@@ -243,5 +243,188 @@ def main():
     # FIM DO TESTE DE LEITURA
     # ==================================================
 
+    # ==================================================
+    # SPRINT 5 — ENCARGOS OPERACIONAIS (ESTRUTURA)
+    # ==================================================
+
+    # Tarifas que NÃO possuem encargo operacional
+    # - SPLIT PERCENTUAL → Cash In
+    # - MANUTENÇÃO DE CONTA → Mensalidade
+    TARIFAS_ISENTAS_DE_ENCARGO = {
+        "SPLIT PERCENTUAL",
+        "MANUTENÇÃO DE CONTA",
+    }
+
+    # Definição dos encargos operacionais externos à planilha
+    # Estes encargos representam custos do banco para o GV8
+    ENCARGOS_OPERACIONAIS = [
+        {
+            "id_encargo": "ENCARGO_BMP_TARIFAS",
+            "descricao": "Encargo operacional cobrado pelo banco BMP sobre tarifas",
+            "tipo": "percentual",
+            "percentual": 0.02,  # 2%
+            "banco_liquidante": "BMP",
+            "ativo": True,
+        }
+    ]
+
+    # ==================================================
+    # FIM — SPRINT 5 (MICRO-PASSO 5.8)
+    # ==================================================
+
+    # ==================================================
+    # SPRINT 5 — APLICAÇÃO DE ENCARGOS OPERACIONAIS
+    # ==================================================
+
+    def aplicar_encargos(registros_elegiveis):
+        """
+        Aplica encargos operacionais sobre registros elegíveis,
+        sem alterar os registros originais.
+
+        Retorna uma lista de encargos aplicados ou não aplicados,
+        sempre com motivo explícito.
+        """
+
+        encargos_aplicados = []
+
+        for registro in registros_elegiveis:
+            descricao = registro.get("descricao")
+            valor = registro.get("valor")
+            sistema_origem = registro.get("sistema_origem")
+            categoria = registro.get("categoria_operacao")
+            impacto = registro.get("impacto_lucro")
+
+            # =============================
+            # Regras de bloqueio
+            # =============================
+
+            if registro.get("cliente_elegivel") is not True:
+                encargos_aplicados.append({
+                    "registro": registro,
+                    "encargo_aplicado": False,
+                    "motivo_aplicacao": "Registro não elegível ao GV8"
+                })
+                continue
+
+            if categoria != "tarifa":
+                encargos_aplicados.append({
+                    "registro": registro,
+                    "encargo_aplicado": False,
+                    "motivo_aplicacao": "Operação não é tarifa"
+                })
+                continue
+
+            if impacto != "receita":
+                encargos_aplicados.append({
+                    "registro": registro,
+                    "encargo_aplicado": False,
+                    "motivo_aplicacao": "Operação sem impacto de receita"
+                })
+                continue
+
+            if descricao in TARIFAS_ISENTAS_DE_ENCARGO:
+                motivo = (
+                    "Tarifa do tipo Cash In isenta de encargo operacional"
+                    if descricao == "SPLIT PERCENTUAL"
+                    else "Tarifa do tipo Mensalidade isenta de encargo operacional"
+                )
+
+                encargos_aplicados.append({
+                    "registro": registro,
+                    "encargo_aplicado": False,
+                    "motivo_aplicacao": motivo
+                })
+                continue
+
+            # =============================
+            # Aplicação do encargo
+            # =============================
+
+            encargo_encontrado = False
+
+            for encargo in ENCARGOS_OPERACIONAIS:
+                if not encargo.get("ativo"):
+                    continue
+
+                if sistema_origem != "PRIVILEGE":
+                    continue
+
+                percentual = encargo.get("percentual")
+
+                if percentual is None or percentual <= 0 or percentual > 1:
+                    encargos_aplicados.append({
+                        "registro": registro,
+                        "encargo_aplicado": False,
+                        "motivo_aplicacao": "Percentual de encargo inválido"
+                    })
+                    encargo_encontrado = True
+                    break
+
+                if valor is None or valor <= 0:
+                    encargos_aplicados.append({
+                        "registro": registro,
+                        "encargo_aplicado": False,
+                        "motivo_aplicacao": "Valor da tarifa inválido para aplicação de encargo"
+                    })
+                    encargo_encontrado = True
+                    break
+
+                valor_encargo = valor * percentual
+
+                encargos_aplicados.append({
+                    "registro": registro,
+                    "encargo_aplicado": True,
+                    "id_encargo": encargo.get("id_encargo"),
+                    "percentual_aplicado": percentual,
+                    "valor_base_tarifa": valor,
+                    "valor_encargo_calculado": round(valor_encargo, 2),
+                    "motivo_aplicacao": "Tarifa operacional elegível ao encargo BMP"
+                })
+
+                encargo_encontrado = True
+                break
+
+            if not encargo_encontrado:
+                encargos_aplicados.append({
+                    "registro": registro,
+                    "encargo_aplicado": False,
+                    "motivo_aplicacao": "Nenhum encargo aplicável ao registro"
+                })
+
+        return encargos_aplicados
+
+    # ==================================================
+    # FIM — SPRINT 5 (MICRO-PASSO 5.9)
+    # ==================================================
+
+    # ==================================================
+    # SPRINT 5 — VALIDAÇÃO DA APLICAÇÃO DE ENCARGOS
+    # (somente print, sem impacto em cálculo)
+    # ==================================================
+
+    encargos_aplicados = aplicar_encargos(registros_elegiveis)
+
+    print("\n--- Validação Sprint 5 | Encargos Operacionais ---")
+
+    for item in encargos_aplicados[:10]:  # limita para não poluir o console
+        registro = item["registro"]
+
+        if item["encargo_aplicado"]:
+            print(
+                f"[ENCARGO APLICADO] "
+                f"Operação: {registro['descricao']} | "
+                f"Valor Tarifa: R$ {registro['valor']:.2f} | "
+                f"Encargo: R$ {item['valor_encargo_calculado']:.2f} | "
+                f"Motivo: {item['motivo_aplicacao']}"
+            )
+        else:
+            print(
+                f"[SEM ENCARGO] "
+                f"Operação: {registro['descricao']} | "
+                f"Motivo: {item['motivo_aplicacao']}"
+            )
+
+    print("--- Fim da validação Sprint 5 ---\n")
+
 if __name__ == "__main__":
     main()
